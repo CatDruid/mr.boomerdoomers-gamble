@@ -3,7 +3,7 @@ import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+//import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GameWindow extends JFrame {
@@ -18,7 +18,7 @@ public class GameWindow extends JFrame {
 
         this.setIconImage(icon.getImage());
 
-        JLabel l = new JLabel("panel label");
+        //JLabel l = new JLabel("panel label");
 
         JPanel p = new JPanel();
         JPanel topBar = new JPanel();
