@@ -13,7 +13,7 @@ public class Magazine {
         this.blankNR =  blankNR;
         
         int blankCount = 0;
-        for (int i = 0; i <= this.bulletAmmount; i++) {
+        for (int i = 0; i < this.bulletAmmount; i++) {
             if (blankCount < this.blankNR) {
                 Bullet newBullet = new Bullet(false);
                 bulletArray.add(newBullet);
@@ -59,8 +59,8 @@ public class Magazine {
     }
 
     public Bullet getNextRound() {
-        Bullet tempBullet = bulletArray.getFirst();
-        bulletArray.removeFirst();
+        Bullet tempBullet = bulletArray.get(0);
+        bulletArray.remove(0);
         return tempBullet;
     }
 

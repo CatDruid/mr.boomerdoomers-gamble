@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 public class TurnLogic {
     private ArrayList<Player> mainArray;
-    private ArrayList<Player> turnArray;
     private Player currentPlayer;
     private int turnCounter;
     private int roundCounter;

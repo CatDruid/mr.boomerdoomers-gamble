@@ -9,7 +9,7 @@ public class Game {
     
 
     public Game(int playerAmount, int aiAmount, String[] nameArray) {
-
+        
         if (playerAmount <= nameArray.length) {
             for (int i = 0; i < playerAmount; i++) {
                 Player playerClass = new Player(nameArray[i], false);
