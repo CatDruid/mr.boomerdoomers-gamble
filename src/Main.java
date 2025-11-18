@@ -1,3 +1,4 @@
+
 public class Main {
     public static void main(String[] args) {
         final String[] NAMES = {"Joe", "shmoe"};
@@ -6,18 +7,17 @@ public class Main {
         final int PLAYERS = 2;
         final int AI = 4;
 
-        GameWindow gui = new GameWindow(1270,720);
-
-
-
         Game game = new Game(PLAYERS, AI, NAMES);
         game.generateMag(BULLET_AMMOUNT, BLANK_AMMOUNT);
-        System.out.println("--- List before shuffled ---");
-        game.magazine.showBulletArray();
-        System.out.println("--- List after shuffled ---");
-        game.magazine.shuffleMag();
-        game.magazine.showBulletArray();
-        System.out.println("--- Names of active players ---");
-        game.showActivePlayers();
+        //System.out.println("--- List before shuffled ---");
+        //game.magazine.showBulletArray();
+        //System.out.println("--- List after shuffled ---");
+        //game.magazine.shuffleMag();
+        //game.magazine.showBulletArray();
+        //System.out.println("--- Names of active players ---");
+        //game.showActivePlayers();
+        
+        game.startUi();
     }
+
 }

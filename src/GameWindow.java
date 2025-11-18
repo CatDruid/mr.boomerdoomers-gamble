@@ -50,4 +50,6 @@ public class GameWindow extends JFrame {
         this.setVisible(true);
     }
 
+    public Ui ui() {return this.gameui;}
+
 }

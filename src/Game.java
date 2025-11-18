@@ -6,6 +6,7 @@ public class Game {
     private String[] aiNames = {"null", "John Gaming", "Erik", "Andreas", "Dawg", "Bodil", "Hjalmar", "Gertrud"};
     private ArrayList<Player> playerArray = new ArrayList<Player>();
     public Magazine magazine;
+    private GameWindow gui;
     
 
     public Game(int playerAmount, int aiAmount, String[] nameArray) {
@@ -50,5 +51,13 @@ public class Game {
         while (playeritr.hasNext()) {
             System.out.println(playeritr.next().getName());
         }
+    }
+
+    public ArrayList<Player> getPlayerArray () {return this.playerArray;}
+    public GameWindow gui () {return this.gui;}
+
+    public void startUi() {
+        GameWindow gui = new GameWindow(1270,720);
+        gui.ui().setPlayers(playerArray);
     }
 }
