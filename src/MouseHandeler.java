@@ -4,17 +4,11 @@ import javax.swing.event.MouseInputAdapter;
 
 public class MouseHandeler extends MouseInputAdapter {
 
-    public int x;
-    public int y;
     public boolean mousePressed;
-    public int pressedX;
-    public int pressedY;
+    public Point pressedpyx = new Point();
     public Point pxy = new Point();
 
-    MouseHandeler() {
-        this.x = 0;
-        this.y = 0;
-    }
+    MouseHandeler() {}
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -29,8 +23,7 @@ public class MouseHandeler extends MouseInputAdapter {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        pressedX = e.getX();
-        pressedY = e.getY();
+        this.pressedpyx.move(e.getX(), e.getY());
         mousePressed = true;
     }
 
@@ -52,14 +45,11 @@ public class MouseHandeler extends MouseInputAdapter {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        this.x = e.getX();
-        this.y = e.getY();
-        this.pxy.move(this.x, this.y);
+        this.pxy.move(e.getX(), e.getY());
     }
     
     public void resetPress() {
         this.mousePressed = false;
-        this.pressedX = 0;
-        this.pressedY = 0;
+        this.pressedpyx.move(0,0);
     }
 }

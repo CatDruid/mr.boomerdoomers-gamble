@@ -41,6 +41,23 @@ public class Game {
 
     }
 
+    public Player calculateWinner(ArrayList<Player> playerList) {
+        ArrayList<Player> alivePlayers = new ArrayList<>();
+
+        for (int i = playerList.size()-1; i >= 0; i--) {
+            if (playerList.get(i).dead() == false) {
+                alivePlayers.add(playerList.get(i));
+            }
+        }
+
+        if (alivePlayers.size() == 1) {
+            System.out.println("Game Finished. Winner is :" + alivePlayers.get(0).getName());
+            return alivePlayers.get(0);
+        } else {
+            return null;
+        }
+    }
+
     public void generateMag(int totalAmount, int blankNR) {
         Magazine magazine = new Magazine(totalAmount,blankNR);
         this.magazine = magazine;
@@ -72,6 +89,7 @@ public class Game {
 
     public void startUi() {
         GameWindow gui = new GameWindow(1270,720,this);
+        gui.ui().setGameState("joe");
         gui.ui().setPlayers(playerArray);
     }
 }

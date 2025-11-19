@@ -2,7 +2,7 @@
 public class Main {
     public static void main(String[] args) {
         final String[] NAMES = {"Joe", "shmoe"};
-        final int BULLET_AMMOUNT = 10;
+        final int BULLET_AMMOUNT = 100;
         final int BLANK_AMMOUNT = 0;
         final int PLAYERS = 2;
         final int AI = 4;

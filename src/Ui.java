@@ -9,15 +9,20 @@ import java.util.ArrayList;
 
 public class Ui extends JPanel {
 
-    private ArrayList<BufferedImage> imageList = new ArrayList<BufferedImage>();
+    private ArrayList<BufferedImage> imageList = new ArrayList<>();
     public Image face;
     public Image topPanelImage;
     private int screenH;
     private int screenW;
-    private int frameRate = 60;
     private ArrayList<Player> players;
     private MouseHandeler mouse;
     private Game game;
+    private final int targetFPS = 60;
+    private int fps = 60;
+    private String gameState;
+
+
+
 
     public Ui (int screenW, int screenH, Game game) {
         this.screenH = screenH;
@@ -36,12 +41,35 @@ public class Ui extends JPanel {
         Thread animationThread = new Thread () {
             @Override
             public void run() {
+
+                    double drawInterval = 1000000000/targetFPS;
+                    double delta = 0;
+                    long lastTime = System.nanoTime();
+                    long currentTime;
+                    long timer = 0;
+                    int drawCount = 0;
+
                 while (true) {
-                  update();   // update the position and image
-                  repaint();  // Refresh the display
-                  try {
-                     Thread.sleep(1000 / frameRate); // delay and yield to other threads
-                   } catch (InterruptedException ex) { }
+
+                    currentTime = System.nanoTime();
+
+                    delta += (currentTime - lastTime) / drawInterval;
+                    timer += (currentTime - lastTime);
+                    lastTime = currentTime;
+
+                    if (delta >= 1) {
+                        update();   // update the position and image
+                        repaint();  // Refresh the display
+                        delta--;
+                        drawCount++;
+                    }
+
+                    if(timer >= 1000000000) {
+                        fps = drawCount;
+                        drawCount = 0;
+                        timer = 0;
+                    }
+
                 }
             }
         };
@@ -76,26 +104,28 @@ public class Ui extends JPanel {
 
     public void paint(Graphics g) {
 
-        Graphics2D g2D = (Graphics2D) g;
-       
-        g2D.setPaint(Color.WHITE);
-        g2D.fillRect(0, 0, screenW, screenH);
+        clearScreen(g);
+        switch(gameState) {
+            case "main":
+                drawMainGame(g);
+                game.calculateWinner(players);
+                break;
+            
+            case "resultScreen":
+                break;
+            
+            default:
+                drawMainMenu(g);
+                break;
+
+        }
+
         
-        drawUi(g);
-        g.drawString("Mouse x: " + mouse.x, 512, 20);
-        g.drawString("Mouse y: " + mouse.y, 612, 20);
-        g2D.setPaint(Color.BLACK);
-        g2D.fillRect(0, screenH-200, screenW, 200);
-        g2D.drawImage(face, (screenW/2)-50, screenH-200, null);
-        drawPlayers(g2D);
-        
-
-
-
     }
 
     public void setPlayers(ArrayList<Player> array) { this.players = array;}
     public ArrayList<Player> getPlayers() {return this.players;}
+    public void setGameState(String s) {this.gameState = s;}
 
 
     private void initImages() {
@@ -116,13 +146,40 @@ public class Ui extends JPanel {
 
     private void drawPlayers(Graphics g) {
         if (this.players != null) {
-            for (int i = 0; i < this.players.size(); i++) {
+            for (int i = this.players.size()-1; i >= 0; i--) {
                 Player current = this.players.get(i);
                 current.setY(300);
                 current.setX(125*i+100);
                 current.render(g);
             }
         }
+    }
+
+    private void drawMainGame(Graphics g) {
+        Graphics2D g2D = (Graphics2D) g;
+        
+        drawUi(g);
+        g.drawString("FPS: " + fps, 312, 20);
+        g.drawString("Mouse x: " + mouse.pxy.x, 512, 20);
+        g.drawString("Mouse y: " + mouse.pxy.y, 612, 20);
+        g2D.setPaint(Color.BLACK);
+        g2D.fillRect(0, screenH-200, screenW, 200);
+        g2D.drawImage(face, (screenW/2)-50, screenH-200, null);
+        drawPlayers(g2D);
+    }
+
+    private void drawMainMenu(Graphics g) {
+        g.setColor(Color.black);
+        g.fillRect(0, 0, screenW, screenH);
+        g.setColor(Color.white);
+        g.drawString("MAIN MENU", screenW/2, screenH/2);
+    }
+
+    private void clearScreen(Graphics g) {
+        Graphics2D g2D = (Graphics2D) g;
+
+        g2D.setPaint(Color.WHITE);
+        g2D.fillRect(0, 0, screenW, screenH);
     }
 
     private boolean collision(Point m, int ox, int oy, int osx, int osy){
