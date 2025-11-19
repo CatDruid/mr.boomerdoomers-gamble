@@ -16,60 +16,81 @@ public class Ui extends JPanel {
     private int screenW;
     private int frameRate = 60;
     private ArrayList<Player> players;
-    private int yaxis;
+    private MouseHandeler mouse;
+    private Game game;
 
-    public Ui (int screenW, int screenH) {
+    public Ui (int screenW, int screenH, Game game) {
         this.screenH = screenH;
         this.screenW = screenW;
+        this.game = game;
         topPanelImage = new ImageIcon("ui/toppanel.png").getImage();
         face = new ImageIcon("graphics/VILEG1.png").getImage();
         this.setPreferredSize(new Dimension(screenW, screenH));
 
         //MainUI file loader
         initImages();
-
-
+        this.mouse = new MouseHandeler();
+        this.addMouseListener(mouse);
+        this.addMouseMotionListener(mouse);
+        
         Thread animationThread = new Thread () {
-         @Override
-         public void run() {
-            while (true) {
-               update();   // update the position and image
-               repaint();  // Refresh the display
-               try {
-                  Thread.sleep(1000 / frameRate); // delay and yield to other threads
-               } catch (InterruptedException ex) { }
+            @Override
+            public void run() {
+                while (true) {
+                  update();   // update the position and image
+                  repaint();  // Refresh the display
+                  try {
+                     Thread.sleep(1000 / frameRate); // delay and yield to other threads
+                   } catch (InterruptedException ex) { }
+                }
             }
-         }
         };
         animationThread.start(); 
     }
 
 
     public void update() {
-        if (this.yaxis > 500) {
-            this.yaxis = 200;
-        } else {
-        this.yaxis = yaxis + 1;
+
+        if (this.players != null) {
+            for (int i = this.players.size()-1; i >= 0; i--) {
+                if (this.players.get(i).dead() == true) {continue;}
+                Player current = this.players.get(i);
+                if (collision(mouse.pxy, current.getX(), current.getY(), current.getSizeX(), current.getSizeY())){
+                    current.hover();
+                } else {current.unhover();}
+            }
         }
+
+        if (mouse.mousePressed) {
+            for (int i = this.players.size()-1; i >= 0; i--) {
+                Player current = this.players.get(i);
+                if (current.dead() == true) {continue;}
+                if (collision(mouse.pxy, current.getX(), current.getY(), current.getSizeX(), current.getSizeY())){
+                    game.shoot(current, current);
+                }
+            }
+            mouse.resetPress();
+        }
+
     }
 
     public void paint(Graphics g) {
 
         Graphics2D g2D = (Graphics2D) g;
        
+        g2D.setPaint(Color.WHITE);
+        g2D.fillRect(0, 0, screenW, screenH);
+        
         drawUi(g);
-
+        g.drawString("Mouse x: " + mouse.x, 512, 20);
+        g.drawString("Mouse y: " + mouse.y, 612, 20);
+        g2D.setPaint(Color.BLACK);
         g2D.fillRect(0, screenH-200, screenW, 200);
         g2D.drawImage(face, (screenW/2)-50, screenH-200, null);
+        drawPlayers(g2D);
+        
 
-        g2D.setPaint(Color.BLACK);
 
-        if (this.players != null) {
-            int totalplayers = this.players.size();
-            for (int i = 0; i < this.players.size(); i++) {
-                g2D.fillRect(((this.screenW-50)/totalplayers)*i + 50, yaxis, 50, 50);
-            }
-        }
 
     }
 
@@ -92,4 +113,25 @@ public class Ui extends JPanel {
         g.drawImage(this.imageList.get(0), 0, 0, null); //top panel
        // g.drawImage(this.imageList.get(1), 0, screenH-200, null); // bottom panel
     }
+
+    private void drawPlayers(Graphics g) {
+        if (this.players != null) {
+            for (int i = 0; i < this.players.size(); i++) {
+                Player current = this.players.get(i);
+                current.setY(300);
+                current.setX(125*i+100);
+                current.render(g);
+            }
+        }
+    }
+
+    private boolean collision(Point m, int ox, int oy, int osx, int osy){
+        if (m.x > ox && m.x < ox + osx){
+            if (m.y > oy && m.y < oy + osy) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

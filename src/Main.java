@@ -3,12 +3,13 @@ public class Main {
     public static void main(String[] args) {
         final String[] NAMES = {"Joe", "shmoe"};
         final int BULLET_AMMOUNT = 10;
-        final int BLANK_AMMOUNT = 9;
+        final int BLANK_AMMOUNT = 0;
         final int PLAYERS = 2;
         final int AI = 4;
 
         Game game = new Game(PLAYERS, AI, NAMES);
         game.generateMag(BULLET_AMMOUNT, BLANK_AMMOUNT);
+        game.startUi();
         //System.out.println("--- List before shuffled ---");
         //game.magazine.showBulletArray();
         //System.out.println("--- List after shuffled ---");
@@ -17,7 +18,7 @@ public class Main {
         //System.out.println("--- Names of active players ---");
         //game.showActivePlayers();
         
-        game.startUi();
+
     }
 
 }

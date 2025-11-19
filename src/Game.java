@@ -1,5 +1,8 @@
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.swing.ImageIcon;
 
 public class Game {
     
@@ -11,6 +14,17 @@ public class Game {
 
     public Game(int playerAmount, int aiAmount, String[] nameArray) {
         
+        ArrayList<Image> doomguy = new ArrayList<>();
+        doomguy.add(new ImageIcon("graphics/STFDEAD0BIG.png").getImage());
+        doomguy.add(new ImageIcon("graphics/STFST01BIG.png").getImage());
+        doomguy.add(new ImageIcon("graphics/STFST31BIG.png").getImage());
+        doomguy.add(new ImageIcon("graphics/STFST40BIG.png").getImage());
+        doomguy.add(new ImageIcon("graphics/STFEVL0BIG.png").getImage());
+        doomguy.add(new ImageIcon("graphics/STFEVL3BIG.png").getImage());
+        doomguy.add(new ImageIcon("graphics/STFEVL4BIG.png").getImage());                      
+        Player playerClass1 = new Player("Jan Doom", 0, 0, false, doomguy);
+        playerArray.add(playerClass1);
+
         if (playerAmount <= nameArray.length) {
             for (int i = 0; i < playerAmount; i++) {
                 Player playerClass = new Player(nameArray[i], false);
@@ -34,15 +48,15 @@ public class Game {
 
     public void shoot(Player player, Player playerShot) {
 
-        System.out.println(player.getName() + " shoots at " + playerShot.getName());
-
-        if (this.magazine.getNextRound().getLive() == true) {
-            playerShot.damage(1);
-        } else {
-            System.out.println("CLICK*** " + playerShot.getName() + " didn't die");
-        }   
-        if (player == playerShot) { }
-
+        if (this.magazine.getMagazine().size() == 0) {System.out.println("Need to reload");} else {
+            System.out.println(player.getName() + " shoots at " + playerShot.getName());
+            if (this.magazine.getNextRound().getLive() == true) {
+                playerShot.damage(1);
+            } else {
+                System.out.println("CLICK*** " + playerShot.getName() + " didn't die");
+            }   
+            if (player == playerShot) { }
+        }
     }
 
     public void showActivePlayers() {
@@ -57,7 +71,7 @@ public class Game {
     public GameWindow gui () {return this.gui;}
 
     public void startUi() {
-        GameWindow gui = new GameWindow(1270,720);
+        GameWindow gui = new GameWindow(1270,720,this);
         gui.ui().setPlayers(playerArray);
     }
 }
