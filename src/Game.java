@@ -1,8 +1,10 @@
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.imageio.ImageIO;
 
-import javax.swing.ImageIcon;
 
 public class Game {
     
@@ -11,17 +13,26 @@ public class Game {
     public Magazine magazine;
     private GameWindow gui;
     
-
     public Game(int playerAmount, int aiAmount, String[] nameArray) {
         
-        ArrayList<Image> doomguy = new ArrayList<>();
-        doomguy.add(new ImageIcon("graphics/STFDEAD0BIG.png").getImage());
-        doomguy.add(new ImageIcon("graphics/STFST01BIG.png").getImage());
-        doomguy.add(new ImageIcon("graphics/STFST31BIG.png").getImage());
-        doomguy.add(new ImageIcon("graphics/STFST40BIG.png").getImage());
-        doomguy.add(new ImageIcon("graphics/STFEVL0BIG.png").getImage());
-        doomguy.add(new ImageIcon("graphics/STFEVL3BIG.png").getImage());
-        doomguy.add(new ImageIcon("graphics/STFEVL4BIG.png").getImage());                      
+        ArrayList<BufferedImage> doomguy = new ArrayList<>();
+        String[] filepaths = {
+            "graphics/STFEVL3.png",
+            "graphics/STFEVL2.png",
+            "graphics/STFEVL0.png",
+            "graphics/STFST31.png",
+            "graphics/STFST21.png",
+            "graphics/STFST01.png",
+            "graphics/STFDEAD0.png"
+        };
+        
+        for (int i = filepaths.length-1; i >= 0; i--) {
+            try {
+                BufferedImage image = ImageIO.read(new File(filepaths[i]));
+                doomguy.add(image);
+            } catch (IOException e) {System.out.println("ERROR:" + e.getMessage());}
+        }
+
         Player playerClass1 = new Player("Jan Doom", 0, 0, false, doomguy);
         playerArray.add(playerClass1);
 
@@ -89,7 +100,11 @@ public class Game {
 
     public void startUi() {
         GameWindow gui = new GameWindow(1270,720,this);
-        gui.ui().setGameState("joe");
+        gui.ui().setGameState("main");
         gui.ui().setPlayers(playerArray);
+    }
+
+    public void gameUpdate() {
+        calculateWinner(playerArray);
     }
 }

@@ -20,10 +20,13 @@ public class Ui extends JPanel {
     private final int targetFPS = 60;
     private int fps = 60;
     private String gameState;
+    private Player currentHover;
+    private double delta;
 
 
 
-
+//#region Constructor
+// Initializes the draw thread and calculates game speed and delta time
     public Ui (int screenW, int screenH, Game game) {
         this.screenH = screenH;
         this.screenW = screenW;
@@ -43,7 +46,7 @@ public class Ui extends JPanel {
             public void run() {
 
                     double drawInterval = 1000000000/targetFPS;
-                    double delta = 0;
+                    delta = 0;
                     long lastTime = System.nanoTime();
                     long currentTime;
                     long timer = 0;
@@ -75,40 +78,51 @@ public class Ui extends JPanel {
         };
         animationThread.start(); 
     }
+//#endregion
 
 
+//#region Graphics Update
+ 
     public void update() {
 
         if (this.players != null) {
-            for (int i = this.players.size()-1; i >= 0; i--) {
-                if (this.players.get(i).dead() == true) {continue;}
+            for (int i = this.players.size()-1; i>=0;i--) {
                 Player current = this.players.get(i);
-                if (collision(mouse.pxy, current.getX(), current.getY(), current.getSizeX(), current.getSizeY())){
+                if (playerCollision(current)) {
+                    currentHover = current;
                     current.hover();
-                } else {current.unhover();}
+                } else {
+                    current.unhover();
+                }
             }
         }
 
         if (mouse.mousePressed) {
             for (int i = this.players.size()-1; i >= 0; i--) {
                 Player current = this.players.get(i);
-                if (current.dead() == true) {continue;}
-                if (collision(mouse.pxy, current.getX(), current.getY(), current.getSizeX(), current.getSizeY())){
+                if (playerCollision(current)){
                     game.shoot(current, current);
                 }
             }
+            System.out.println("MouseX: " + mouse.pxy.x +  " MouseY: " + mouse.pxy.y);
             mouse.resetPress();
         }
 
     }
 
+//#endregion
+
+
+//#region Graphics paint
+//Paints the graphics dependeing on gamestate
+//Split up into own functions with links to "game" to update 
     public void paint(Graphics g) {
 
         clearScreen(g);
         switch(gameState) {
             case "main":
                 drawMainGame(g);
-                game.calculateWinner(players);
+                game.gameUpdate();
                 break;
             
             case "resultScreen":
@@ -122,6 +136,7 @@ public class Ui extends JPanel {
 
         
     }
+//#endregion
 
     public void setPlayers(ArrayList<Player> array) { this.players = array;}
     public ArrayList<Player> getPlayers() {return this.players;}
@@ -148,8 +163,7 @@ public class Ui extends JPanel {
         if (this.players != null) {
             for (int i = this.players.size()-1; i >= 0; i--) {
                 Player current = this.players.get(i);
-                current.setY(300);
-                current.setX(125*i+100);
+                current.setPxy(125*i+100, 300);
                 current.render(g);
             }
         }
@@ -159,9 +173,10 @@ public class Ui extends JPanel {
         Graphics2D g2D = (Graphics2D) g;
         
         drawUi(g);
-        g.drawString("FPS: " + fps, 312, 20);
-        g.drawString("Mouse x: " + mouse.pxy.x, 512, 20);
-        g.drawString("Mouse y: " + mouse.pxy.y, 612, 20);
+        g.drawString("FPS: " + fps, 312, 25);
+        g.drawString("Mouse x: " + mouse.pxy.x, 512, 25);
+        g.drawString("Mouse y: " + mouse.pxy.y, 612, 25);
+        uiHover(g);
         g2D.setPaint(Color.BLACK);
         g2D.fillRect(0, screenH-200, screenW, 200);
         g2D.drawImage(face, (screenW/2)-50, screenH-200, null);
@@ -182,13 +197,28 @@ public class Ui extends JPanel {
         g2D.fillRect(0, 0, screenW, screenH);
     }
 
-    private boolean collision(Point m, int ox, int oy, int osx, int osy){
-        if (m.x > ox && m.x < ox + osx){
-            if (m.y > oy && m.y < oy + osy) {
+    private boolean collision(Point m, Point pp, int osx, int osy){
+        if (m.x > pp.x && m.x < pp.x + osx){
+            if (m.y > pp.y && m.y < pp.y + osy) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean playerCollision (Player p) {
+            if (p.dead()) {return false;}
+            if (collision(mouse.pxy, 
+                p.getPxy(), 
+                p.getSizeX(), 
+                p.getSizeY())) 
+                {return true;} else {return false;}
+    }
+
+    private void uiHover(Graphics g) {
+        if (currentHover != null) {
+            g.drawString("Player: " + currentHover.getName(), 100, 25);
+        }
     }
 
 }
