@@ -17,13 +17,13 @@ public class Game {
         
         ArrayList<BufferedImage> doomguy = new ArrayList<>();
         String[] filepaths = {
-            "graphics/STFEVL3.png",
-            "graphics/STFEVL2.png",
-            "graphics/STFEVL0.png",
-            "graphics/STFST31.png",
-            "graphics/STFST21.png",
-            "graphics/STFST01.png",
-            "graphics/STFDEAD0.png"
+            "graphics/STFEVL3.png", // almost dead hover
+            "graphics/STFEVL2.png", // middle dead hover
+            "graphics/STFEVL0.png", // normal hover
+            "graphics/STFST31.png", // almost dead
+            "graphics/STFST21.png", // middle dead
+            "graphics/STFST01.png", // normal standard
+            "graphics/STFDEAD0.png" // dead
         };
         
         for (int i = filepaths.length-1; i >= 0; i--) {
@@ -100,7 +100,7 @@ public class Game {
 
     public void startUi() {
         GameWindow gui = new GameWindow(1270,720,this);
-        gui.ui().setGameState("main");
+        gui.ui().setGameState("m");
         gui.ui().setPlayers(playerArray);
     }
 

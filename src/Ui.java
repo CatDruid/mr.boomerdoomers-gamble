@@ -10,11 +10,14 @@ import java.util.ArrayList;
 public class Ui extends JPanel {
 
     private ArrayList<BufferedImage> imageList = new ArrayList<>();
+    private ArrayList<Player> players;
+    ArrayList<GameButton> buttons = new ArrayList<>();
+
+
     public Image face;
     public Image topPanelImage;
     private int screenH;
     private int screenW;
-    private ArrayList<Player> players;
     private MouseHandeler mouse;
     private Game game;
     private final int targetFPS = 60;
@@ -22,7 +25,6 @@ public class Ui extends JPanel {
     private String gameState;
     private Player currentHover;
     private double delta;
-
 
 
 //#region Constructor
@@ -95,7 +97,7 @@ public class Ui extends JPanel {
                     current.unhover();
                 }
             }
-        }
+        }   
 
         if (mouse.mousePressed) {
             for (int i = this.players.size()-1; i >= 0; i--) {
@@ -104,6 +106,20 @@ public class Ui extends JPanel {
                     game.shoot(current, current);
                 }
             }
+            
+            for (int i = buttons.size()-1; i >= 0; i--) {
+                GameButton current = this.buttons.get(i);
+                if (buttonCollision(current)){
+                    switch(current.getId()){
+                        case "startGame":
+                            gameState = "main";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
             System.out.println("MouseX: " + mouse.pxy.x +  " MouseY: " + mouse.pxy.y);
             mouse.resetPress();
         }
@@ -148,6 +164,7 @@ public class Ui extends JPanel {
             // you can use just the filename if the image file is in your
             // project folder, otherwise you need to provide the file path.
             this.imageList.add(ImageIO.read(new File("ui/toppanel.png")));
+            this.imageList.add(ImageIO.read(new File("ui/lsidepanel.png")));
             //this.imageList.add();
         } catch (IOException exc) {
             System.out.println("Error opening image file: " + exc.getMessage());
@@ -156,6 +173,7 @@ public class Ui extends JPanel {
 
     private void drawUi(Graphics g) {
         g.drawImage(this.imageList.get(0), 0, 0, null); //top panel
+        g.drawImage(this.imageList.get(1), 0, screenH-370, null);
        // g.drawImage(this.imageList.get(1), 0, screenH-200, null); // bottom panel
     }
 
@@ -163,7 +181,12 @@ public class Ui extends JPanel {
         if (this.players != null) {
             for (int i = this.players.size()-1; i >= 0; i--) {
                 Player current = this.players.get(i);
-                current.setPxy(125*i+100, 300);
+                int padding = 50;
+                int a = screenW-2*padding;
+                int r = this.players.size() * current.getSizeX() + (this.players.size() -1) * 50; 
+                int s = 50+(a - r)/(this.players.size() -1);
+
+                current.setPxy(padding + i*(current.getSizeX()+s) ,((screenH-370)/2)+20-(current.getSizeY()/2)); //WTF thank chet yepete
                 current.render(g);
             }
         }
@@ -177,9 +200,10 @@ public class Ui extends JPanel {
         g.drawString("Mouse x: " + mouse.pxy.x, 512, 25);
         g.drawString("Mouse y: " + mouse.pxy.y, 612, 25);
         uiHover(g);
-        g2D.setPaint(Color.BLACK);
-        g2D.fillRect(0, screenH-200, screenW, 200);
-        g2D.drawImage(face, (screenW/2)-50, screenH-200, null);
+        //g2D.setPaint(Color.BLACK);
+        //g2D.fillRect(0, screenH-200, screenW, 200);
+        //g2D.drawImage(face, (screenW/2)-50, screenH-200, null);
+        //(screenH-370/2)+20
         drawPlayers(g2D);
     }
 
@@ -188,6 +212,19 @@ public class Ui extends JPanel {
         g.fillRect(0, 0, screenW, screenH);
         g.setColor(Color.white);
         g.drawString("MAIN MENU", screenW/2, screenH/2);
+
+
+ 
+
+        GameButton startGame = new GameButton("startGame", screenW/2,screenH/2,100,100);
+        buttons.add(startGame);
+        
+        for (int i = buttons.size()-1; i >= 0; i--) {
+            GameButton current = buttons.get(i);
+            current.render(g);
+        }
+
+
     }
 
     private void clearScreen(Graphics g) {
@@ -206,6 +243,14 @@ public class Ui extends JPanel {
         return false;
     }
 
+    private boolean buttonCollision (GameButton b) {
+            if (collision(mouse.pxy, 
+                b.getPxy(), 
+                b.getPsxy().x, 
+                b.getPsxy().y)) 
+                {return true;} else {return false;}
+    }
+    
     private boolean playerCollision (Player p) {
             if (p.dead()) {return false;}
             if (collision(mouse.pxy, 

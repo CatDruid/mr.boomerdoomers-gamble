@@ -4,8 +4,8 @@ public class Main {
         final String[] NAMES = {"Joe", "shmoe"};
         final int BULLET_AMMOUNT = 100;
         final int BLANK_AMMOUNT = 0;
-        final int PLAYERS = 2;
-        final int AI = 4;
+        final int PLAYERS = 1;
+        final int AI = 5;
 
         Game game = new Game(PLAYERS, AI, NAMES);
         game.generateMag(BULLET_AMMOUNT, BLANK_AMMOUNT);
