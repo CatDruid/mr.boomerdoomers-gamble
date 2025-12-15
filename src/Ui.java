@@ -25,6 +25,9 @@ public class Ui extends JPanel {
     private String gameState;
     private Player currentHover;
     private double delta;
+    private int drawCount;
+    private ImageHandler mainMenuText = new ImageHandler(new File("ui/menulogo"));
+
 
 
 //#region Constructor
@@ -52,7 +55,7 @@ public class Ui extends JPanel {
                     long lastTime = System.nanoTime();
                     long currentTime;
                     long timer = 0;
-                    int drawCount = 0;
+                    drawCount = 0;
 
                 while (true) {
 
@@ -213,8 +216,10 @@ public class Ui extends JPanel {
         g.setColor(Color.white);
         g.drawString("MAIN MENU", screenW/2, screenH/2);
 
+        //Animations.
 
- 
+        mainMenuText.drawAnimation(g, 100, 100, 100, 100);
+        if (drawCount % 60 == 0){mainMenuText.updateAnimation();}
 
         GameButton startGame = new GameButton("startGame", screenW/2,screenH/2,100,100);
         buttons.add(startGame);
